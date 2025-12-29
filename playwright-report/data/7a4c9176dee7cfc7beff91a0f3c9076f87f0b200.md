@@ -1,0 +1,84 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Progress" [level=1] [ref=e4]
+      - generic [ref=e5]:
+        - button "Last 7 Days" [ref=e6]
+        - button "Last 30 Days" [ref=e7]
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - heading "Calories" [level=2] [ref=e10]
+          - generic [ref=e13]:
+            - generic:
+              - status:
+                - paragraph: Dec 26
+                - list:
+                  - listitem: "calories : 1802"
+                  - listitem: "goal : 2000"
+            - application [ref=e14]:
+              - generic [ref=e37]:
+                - generic [ref=e38]:
+                  - generic [ref=e40]: Dec 23
+                  - generic [ref=e42]: Dec 24
+                  - generic [ref=e44]: Dec 25
+                  - generic [ref=e46]: Dec 26
+                  - generic [ref=e48]: Dec 27
+                  - generic [ref=e50]: Dec 28
+                  - generic [ref=e52]: Dec 29
+                - generic [ref=e53]:
+                  - generic [ref=e55]: "0"
+                  - generic [ref=e57]: "600"
+                  - generic [ref=e59]: "1200"
+                  - generic [ref=e61]: "1800"
+                  - generic [ref=e63]: "2400"
+        - generic [ref=e64]:
+          - heading "Weight" [level=2] [ref=e65]
+          - application [ref=e69]:
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e90]: Dec 23
+                - generic [ref=e92]: Dec 24
+                - generic [ref=e94]: Dec 25
+                - generic [ref=e96]: Dec 26
+                - generic [ref=e98]: Dec 27
+                - generic [ref=e100]: Dec 28
+                - generic [ref=e102]: Dec 29
+              - generic [ref=e103]:
+                - generic [ref=e105]: "72.7"
+                - generic [ref=e107]: "74.7"
+                - generic [ref=e109]: "77.1"
+        - generic [ref=e110]:
+          - heading "Log Weight" [level=2] [ref=e111]
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - spinbutton [ref=e114]
+              - combobox [ref=e115]:
+                - option "kg" [selected]
+                - option "lbs"
+            - button "Log Weight" [disabled] [ref=e116]
+  - navigation [ref=e117]:
+    - generic [ref=e118]:
+      - link "Diary" [ref=e119] [cursor=pointer]:
+        - /url: /diary
+        - img [ref=e121]
+        - generic [ref=e123]: Diary
+      - link "Add" [ref=e124] [cursor=pointer]:
+        - /url: /add
+        - img [ref=e126]
+        - generic [ref=e128]: Add
+      - link "Progress" [ref=e129] [cursor=pointer]:
+        - /url: /progress
+        - img [ref=e131]
+        - generic [ref=e133]: Progress
+      - link "Settings" [ref=e134] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e136]
+        - generic [ref=e139]: Settings
+  - button "Open Next.js Dev Tools" [ref=e145] [cursor=pointer]:
+    - img [ref=e146]
+  - alert [ref=e149]
+  - generic [ref=e150]: "72.7"
+```

@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Settings" [level=1] [ref=e4]
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "Display Mode" [level=2] [ref=e8]
+          - paragraph [ref=e9]: Showing calories only
+        - button [ref=e10]
+      - generic [ref=e12]:
+        - heading "Daily Goals" [level=2] [ref=e13]
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - generic [ref=e16]: Daily Calorie Goal
+            - spinbutton [ref=e17]: "2000"
+          - button "Save Goals" [ref=e18]
+      - generic [ref=e19]:
+        - heading "About" [level=2] [ref=e20]
+        - paragraph [ref=e21]: FitTrack v1.0.0
+        - paragraph [ref=e22]: Calorie & Macro Tracker
+  - navigation [ref=e23]:
+    - generic [ref=e24]:
+      - link "Diary" [ref=e25] [cursor=pointer]:
+        - /url: /diary
+        - img [ref=e27]
+        - generic [ref=e29]: Diary
+      - link "Add" [ref=e30] [cursor=pointer]:
+        - /url: /add
+        - img [ref=e32]
+        - generic [ref=e34]: Add
+      - link "Progress" [ref=e35] [cursor=pointer]:
+        - /url: /progress
+        - img [ref=e37]
+        - generic [ref=e39]: Progress
+      - link "Settings" [ref=e40] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e42]
+        - generic [ref=e45]: Settings
+  - button "Open Next.js Dev Tools" [ref=e51] [cursor=pointer]:
+    - img [ref=e52]
+  - alert [ref=e55]
+```
