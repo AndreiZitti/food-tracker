@@ -57,7 +57,7 @@ export default function ManualEntryForm() {
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-slate-700 mb-1"
         >
           Food Name *
         </label>
@@ -68,7 +68,7 @@ export default function ManualEntryForm() {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           placeholder="e.g., Chicken Breast"
         />
       </div>
@@ -77,7 +77,7 @@ export default function ManualEntryForm() {
       <div>
         <label
           htmlFor="brand"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-slate-700 mb-1"
         >
           Brand (optional)
         </label>
@@ -87,7 +87,7 @@ export default function ManualEntryForm() {
           name="brand"
           value={formData.brand}
           onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           placeholder="e.g., Tyson"
         />
       </div>
@@ -96,7 +96,7 @@ export default function ManualEntryForm() {
       <div>
         <label
           htmlFor="servingSize"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-slate-700 mb-1"
         >
           Serving Size
         </label>
@@ -106,7 +106,7 @@ export default function ManualEntryForm() {
           name="servingSize"
           value={formData.servingSize}
           onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           placeholder="e.g., 100g, 1 cup, 1 piece"
         />
       </div>
@@ -115,7 +115,7 @@ export default function ManualEntryForm() {
       <div>
         <label
           htmlFor="calories"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-slate-700 mb-1"
         >
           Calories (kcal) *
         </label>
@@ -127,7 +127,7 @@ export default function ManualEntryForm() {
           onChange={handleChange}
           required
           min="0"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           placeholder="0"
         />
       </div>
@@ -137,7 +137,7 @@ export default function ManualEntryForm() {
         <div>
           <label
             htmlFor="protein"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-slate-700 mb-1"
           >
             Protein (g)
           </label>
@@ -149,14 +149,14 @@ export default function ManualEntryForm() {
             onChange={handleChange}
             min="0"
             step="0.1"
-            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             placeholder="0"
           />
         </div>
         <div>
           <label
             htmlFor="carbs"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-slate-700 mb-1"
           >
             Carbs (g)
           </label>
@@ -168,14 +168,14 @@ export default function ManualEntryForm() {
             onChange={handleChange}
             min="0"
             step="0.1"
-            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             placeholder="0"
           />
         </div>
         <div>
           <label
             htmlFor="fat"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-slate-700 mb-1"
           >
             Fat (g)
           </label>
@@ -187,7 +187,7 @@ export default function ManualEntryForm() {
             onChange={handleChange}
             min="0"
             step="0.1"
-            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             placeholder="0"
           />
         </div>
@@ -197,7 +197,7 @@ export default function ManualEntryForm() {
       <button
         type="submit"
         disabled={saving || !formData.name || !formData.calories}
-        className="w-full py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 bg-teal-500 text-white rounded-xl font-medium hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {saving ? "Saving..." : "Add Food"}
       </button>

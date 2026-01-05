@@ -1,11 +1,11 @@
 {
-  "name": "FitTrack - Calorie & Macro Tracker",
-  "short_name": "FitTrack",
+  "name": "Z-Fit - Calorie & Macro Tracker",
+  "short_name": "Z-Fit",
   "description": "Track your calories and macros with ease. A simple, fast, mobile-friendly PWA.",
   "start_url": "/diary",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#22c55e",
+  "background_color": "#f8fafc",
+  "theme_color": "#0d9488",
   "orientation": "portrait",
   "scope": "/",
   "icons": [

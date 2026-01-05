@@ -9,13 +9,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FitTrack - Calorie & Macro Tracker",
+  title: "Z-Fit - Calorie & Macro Tracker",
   description: "Track your calories and macros with ease. A simple, fast, mobile-friendly PWA.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "FitTrack",
+    title: "Z-Fit",
   },
   formatDetection: {
     telephone: false,
@@ -31,7 +31,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#22c55e",
+  themeColor: "#0d9488",
 };
 
 export default function RootLayout({
@@ -41,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-gray-50 min-h-screen`}>
+      <body className={`${inter.variable} font-sans antialiased bg-slate-50 min-h-screen`}>
         <main className="pb-20 min-h-screen">
           {children}
         </main>

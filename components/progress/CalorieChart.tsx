@@ -34,7 +34,7 @@ export default function CalorieChart({
         className="h-64 flex items-center justify-center"
         data-testid="calorie-chart"
       >
-        <div className="text-gray-400">Loading chart data...</div>
+        <div className="text-slate-400">Loading chart data...</div>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function CalorieChart({
         className="h-64 flex items-center justify-center"
         data-testid="calorie-chart"
       >
-        <div className="text-center text-gray-400">
+        <div className="text-center text-slate-400">
           <p>No calorie data available</p>
           <p className="text-sm mt-1">Start logging food to see your progress</p>
         </div>
@@ -62,7 +62,7 @@ export default function CalorieChart({
         className="h-64 flex items-center justify-center"
         data-testid="calorie-chart"
       >
-        <div className="text-center text-gray-400">
+        <div className="text-center text-slate-400">
           <p>No calories logged yet</p>
           <p className="text-sm mt-1">Add food to your diary to track progress</p>
         </div>
@@ -106,7 +106,7 @@ export default function CalorieChart({
           <Line
             type="monotone"
             dataKey="goal"
-            stroke="#d1d5db"
+            stroke="#cbd5e1"
             strokeDasharray="5 5"
             strokeWidth={2}
             dot={false}
@@ -115,9 +115,9 @@ export default function CalorieChart({
           <Line
             type="monotone"
             dataKey="calories"
-            stroke="#22c55e"
+            stroke="#0d9488"
             strokeWidth={2}
-            dot={{ fill: "#22c55e", strokeWidth: 2, r: 3 }}
+            dot={{ fill: "#0d9488", strokeWidth: 2, r: 3 }}
             activeDot={{ r: 5 }}
             name="calories"
             connectNulls

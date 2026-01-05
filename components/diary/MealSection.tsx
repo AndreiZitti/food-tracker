@@ -110,18 +110,18 @@ export default function MealSection({
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="flex items-center justify-between p-4 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <span className="text-gray-400">{mealIcons[meal]}</span>
-          <h3 className="font-semibold text-gray-900">{mealLabels[meal]}</h3>
+          <span className="text-slate-400">{mealIcons[meal]}</span>
+          <h3 className="font-semibold text-slate-900">{mealLabels[meal]}</h3>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-slate-500">
             {loading ? "..." : `${Math.round(totalCalories)} kcal`}
           </span>
           <Link
             href={`/add?meal=${meal}&date=${date.toISOString().split("T")[0]}`}
-            className="p-1.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+            className="p-1.5 rounded-full bg-teal-100 text-teal-600 hover:bg-teal-200 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -143,32 +143,32 @@ export default function MealSection({
 
       {/* Food List */}
       {loading ? (
-        <div className="p-4 text-center text-gray-400 text-sm">Loading...</div>
+        <div className="p-4 text-center text-slate-400 text-sm">Loading...</div>
       ) : foods.length > 0 ? (
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-slate-100">
           {foods.map((food) => (
             <div
               key={food.id}
-              className="flex items-center justify-between p-4 hover:bg-gray-50 group"
+              className="flex items-center justify-between p-4 hover:bg-slate-50 group"
             >
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-900 truncate">
+                <div className="font-medium text-slate-900 truncate">
                   {food.foodName}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-slate-500">
                   {food.servings} serving{food.servings !== 1 ? "s" : ""}
                   {food.brand && ` • ${food.brand}`}
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-slate-900">
                   {Math.round(food.calories)} kcal
                 </div>
                 {onDelete && (
                   <button
                     onClick={() => handleDelete(food.id)}
                     disabled={deletingId === food.id}
-                    className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                    className="p-1 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
                     title="Delete"
                   >
                     {deletingId === food.id ? (
@@ -215,7 +215,7 @@ export default function MealSection({
           ))}
         </div>
       ) : (
-        <div className="p-4 text-center text-gray-400 text-sm">
+        <div className="p-4 text-center text-slate-400 text-sm">
           No foods logged
         </div>
       )}

@@ -114,7 +114,7 @@ export default function BarcodeScanner() {
       <div
         id="barcode-scanner"
         ref={scannerRef}
-        className={`w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden mb-4 ${
+        className={`w-full aspect-[4/3] bg-slate-900 rounded-xl overflow-hidden mb-4 ${
           scanning ? "" : "hidden"
         }`}
       />
@@ -123,7 +123,7 @@ export default function BarcodeScanner() {
       {loading && (
         <div className="text-center py-8">
           <svg
-            className="animate-spin h-8 w-8 mx-auto mb-3 text-green-500"
+            className="animate-spin h-8 w-8 mx-auto mb-3 text-teal-500"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -142,7 +142,7 @@ export default function BarcodeScanner() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <p className="text-gray-600">Looking up barcode: {scannedCode}</p>
+          <p className="text-slate-600">Looking up barcode: {scannedCode}</p>
         </div>
       )}
 
@@ -150,20 +150,20 @@ export default function BarcodeScanner() {
       {!scanning && !loading && (
         <div className="text-center">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-rose-50 text-rose-600 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           {scannedCode && !error && (
-            <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-teal-50 text-teal-600 rounded-lg text-sm">
               Barcode scanned: {scannedCode}
             </div>
           )}
 
           <button
             onClick={startScanning}
-            className="w-full py-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 bg-teal-500 text-white rounded-xl font-medium hover:bg-teal-600 transition-colors flex items-center justify-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -187,13 +187,13 @@ export default function BarcodeScanner() {
             {scannedCode ? "Scan Another" : "Start Scanning"}
           </button>
 
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-3 text-sm text-slate-500">
             Point your camera at a barcode to scan
           </p>
 
           {/* Manual barcode entry */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-500 mb-3">
+          <div className="mt-6 pt-6 border-t border-slate-200">
+            <p className="text-sm text-slate-500 mb-3">
               Or enter barcode manually:
             </p>
             <form
@@ -215,11 +215,11 @@ export default function BarcodeScanner() {
                 name="barcode"
                 placeholder="Enter barcode number"
                 pattern="[0-9]{8,14}"
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-medium"
               >
                 Look up
               </button>
@@ -232,7 +232,7 @@ export default function BarcodeScanner() {
       {scanning && (
         <button
           onClick={stopScanning}
-          className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+          className="w-full py-3 bg-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-300 transition-colors"
         >
           Stop Scanning
         </button>

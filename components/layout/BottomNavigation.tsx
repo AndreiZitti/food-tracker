@@ -95,7 +95,7 @@ export default function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
       <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-4">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -105,14 +105,14 @@ export default function BottomNavigation() {
               href={item.href}
               className={`flex flex-col items-center justify-center min-w-[64px] py-2 px-3 rounded-lg transition-colors ${
                 isActive
-                  ? "text-green-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "text-teal-600"
+                  : "text-slate-400 hover:text-slate-600"
               }`}
             >
-              <span className={isActive ? "text-green-600" : ""}>
+              <span className={isActive ? "text-teal-600" : ""}>
                 {item.icon}
               </span>
-              <span className={`text-xs mt-1 font-medium ${isActive ? "text-green-600" : ""}`}>
+              <span className={`text-xs mt-1 font-medium ${isActive ? "text-teal-600" : ""}`}>
                 {item.label}
               </span>
             </Link>

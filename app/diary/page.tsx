@@ -19,7 +19,7 @@ export default function DiaryPage() {
       <DailyTotals totals={totals} loading={loading} />
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+        <div className="mt-4 p-3 bg-rose-50 text-rose-600 rounded-lg text-sm">
           {error}
         </div>
       )}

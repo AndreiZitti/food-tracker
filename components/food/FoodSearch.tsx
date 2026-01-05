@@ -56,10 +56,10 @@ export default function FoodSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for food..."
-          className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           autoFocus
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
           {loading ? (
             <svg
               className="animate-spin h-5 w-5"
@@ -102,7 +102,7 @@ export default function FoodSearch() {
 
       {/* Results */}
       {loading && query.length >= 2 ? (
-        <div className="text-center py-8 text-gray-500">Searching...</div>
+        <div className="text-center py-8 text-slate-500">Searching...</div>
       ) : results.length > 0 ? (
         <div className="space-y-2">
           {results.map((food) => (
@@ -113,30 +113,30 @@ export default function FoodSearch() {
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900">{food.name}</div>
+                  <div className="font-medium text-slate-900">{food.name}</div>
                   {food.brand && (
-                    <div className="text-sm text-gray-500">{food.brand}</div>
+                    <div className="text-sm text-slate-500">{food.brand}</div>
                   )}
-                  <div className="text-sm text-gray-400 mt-1">
+                  <div className="text-sm text-slate-400 mt-1">
                     {food.servingSize}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-green-600">
+                  <div className="font-semibold text-teal-600">
                     {Math.round(food.calories)} kcal
                   </div>
-                  <div className="text-xs text-gray-400">per serving</div>
+                  <div className="text-xs text-slate-400">per serving</div>
                 </div>
               </div>
             </button>
           ))}
         </div>
       ) : searched && query.length >= 2 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-slate-500">
           No results found. Try a different search term.
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-slate-400">
           {query.length > 0 && query.length < 2
             ? "Type at least 2 characters to search"
             : "Search for foods to add to your diary"}

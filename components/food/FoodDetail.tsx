@@ -73,7 +73,7 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
     <div className="space-y-4">
       <button
         onClick={onBack}
-        className="text-gray-500 hover:text-gray-700 flex items-center gap-1"
+        className="text-slate-500 hover:text-slate-700 flex items-center gap-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -100,21 +100,21 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
             className="w-20 h-20 object-contain mx-auto mb-3 rounded-lg"
           />
         )}
-        <h2 className="text-xl font-semibold text-gray-900">{food.name}</h2>
-        {food.brand && <p className="text-gray-500">{food.brand}</p>}
-        <p className="text-sm text-gray-400 mt-1">{food.servingSize}</p>
+        <h2 className="text-xl font-semibold text-slate-900">{food.name}</h2>
+        {food.brand && <p className="text-slate-500">{food.brand}</p>}
+        <p className="text-sm text-slate-400 mt-1">{food.servingSize}</p>
         {food.nutritionGrade && (
           <span
             className={`inline-block mt-2 px-2 py-0.5 text-xs font-bold rounded ${
               food.nutritionGrade === "a"
-                ? "bg-green-100 text-green-700"
+                ? "bg-emerald-100 text-emerald-700"
                 : food.nutritionGrade === "b"
                 ? "bg-lime-100 text-lime-700"
                 : food.nutritionGrade === "c"
-                ? "bg-yellow-100 text-yellow-700"
+                ? "bg-amber-100 text-amber-700"
                 : food.nutritionGrade === "d"
                 ? "bg-orange-100 text-orange-700"
-                : "bg-red-100 text-red-700"
+                : "bg-rose-100 text-rose-700"
             }`}
           >
             Nutri-Score {food.nutritionGrade.toUpperCase()}
@@ -124,13 +124,13 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
 
       {/* Servings adjuster */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-slate-700 mb-2">
           Servings
         </label>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setServings(Math.max(0.5, servings - 0.5))}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-xl font-bold"
+            className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xl font-bold"
           >
             −
           </button>
@@ -140,13 +140,13 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
             onChange={(e) =>
               setServings(Math.max(0.1, parseFloat(e.target.value) || 0.1))
             }
-            className="w-20 text-center text-xl font-semibold border rounded-lg py-2"
+            className="w-20 text-center text-xl font-semibold border border-slate-200 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             step="0.5"
             min="0.1"
           />
           <button
             onClick={() => setServings(servings + 0.5)}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-xl font-bold"
+            className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xl font-bold"
           >
             +
           </button>
@@ -155,40 +155,40 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
 
       {/* Nutrition info */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <h3 className="font-medium text-gray-900 mb-3">
+        <h3 className="font-medium text-slate-900 mb-3">
           Nutrition ({servings} serving{servings !== 1 ? "s" : ""})
         </h3>
         <div className="grid grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-teal-600">
               {Math.round(food.calories * servings)}
             </div>
-            <div className="text-xs text-gray-500">kcal</div>
+            <div className="text-xs text-slate-500">kcal</div>
           </div>
           <div>
-            <div className="text-xl font-semibold text-gray-900">
+            <div className="text-xl font-semibold text-indigo-600">
               {Math.round(food.protein * servings * 10) / 10}g
             </div>
-            <div className="text-xs text-gray-500">Protein</div>
+            <div className="text-xs text-slate-500">Protein</div>
           </div>
           <div>
-            <div className="text-xl font-semibold text-gray-900">
+            <div className="text-xl font-semibold text-amber-600">
               {Math.round(food.carbs * servings * 10) / 10}g
             </div>
-            <div className="text-xs text-gray-500">Carbs</div>
+            <div className="text-xs text-slate-500">Carbs</div>
           </div>
           <div>
-            <div className="text-xl font-semibold text-gray-900">
+            <div className="text-xl font-semibold text-pink-600">
               {Math.round(food.fat * servings * 10) / 10}g
             </div>
-            <div className="text-xs text-gray-500">Fat</div>
+            <div className="text-xs text-slate-500">Fat</div>
           </div>
         </div>
       </div>
 
       {/* Meal selector */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-slate-700 mb-2">
           Add to
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -198,8 +198,8 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
               onClick={() => setSelectedMeal(meal.value)}
               className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                 selectedMeal === meal.value
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-teal-500 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
               {meal.label}
@@ -212,7 +212,7 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
       <button
         onClick={handleAddFood}
         disabled={adding}
-        className="w-full py-4 bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white font-semibold rounded-xl transition-colors"
+        className="w-full py-4 bg-teal-500 hover:bg-teal-600 disabled:bg-teal-300 text-white font-semibold rounded-xl transition-colors"
       >
         {adding
           ? "Adding..."

@@ -45,14 +45,14 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">Settings</h1>
 
       {/* Display Mode Toggle */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Display Mode</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-lg font-semibold text-slate-900">Display Mode</h2>
+            <p className="text-sm text-slate-500">
               {settings.displayMode === "simple"
                 ? "Showing calories only"
                 : "Showing all macros"}
@@ -62,8 +62,8 @@ export default function SettingsPage() {
             onClick={toggleDisplayMode}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
               settings.displayMode === "advanced"
-                ? "bg-green-500"
-                : "bg-gray-200"
+                ? "bg-teal-500"
+                : "bg-slate-200"
             }`}
           >
             <span
@@ -79,7 +79,7 @@ export default function SettingsPage() {
 
       {/* Goals Form */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Daily Goals</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Daily Goals</h2>
         <GoalsForm
           settings={settings}
           onSave={handleSave}
@@ -89,16 +89,16 @@ export default function SettingsPage() {
 
       {/* Save Indicator */}
       {saved && (
-        <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+        <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-teal-500 text-white px-4 py-2 rounded-lg shadow-lg">
           Settings saved!
         </div>
       )}
 
       {/* App Info */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">About</h2>
-        <p className="text-sm text-gray-500">FitTrack v1.0.0</p>
-        <p className="text-sm text-gray-500">Calorie & Macro Tracker</p>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">About</h2>
+        <p className="text-sm text-slate-500">Z-Fit v1.0.0</p>
+        <p className="text-sm text-slate-500">Calorie & Macro Tracker</p>
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ export default function WeightChart({
         className="h-64 flex items-center justify-center"
         data-testid="weight-chart"
       >
-        <div className="text-gray-400">Loading chart data...</div>
+        <div className="text-slate-400">Loading chart data...</div>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function WeightChart({
         className="h-64 flex items-center justify-center"
         data-testid="weight-chart"
       >
-        <div className="text-center text-gray-400">
+        <div className="text-center text-slate-400">
           <p>No weight data available</p>
           <p className="text-sm mt-1">Log your weight below to track progress</p>
         </div>
@@ -89,9 +89,9 @@ export default function WeightChart({
           <Line
             type="monotone"
             dataKey="weight"
-            stroke="#3b82f6"
+            stroke="#6366f1"
             strokeWidth={2}
-            dot={{ fill: "#3b82f6", strokeWidth: 2, r: 3 }}
+            dot={{ fill: "#6366f1", strokeWidth: 2, r: 3 }}
             activeDot={{ r: 5 }}
             connectNulls
           />

@@ -41,7 +41,7 @@ export default function DateSelector({ date, onDateChange }: DateSelectorProps) 
     <div className="flex items-center justify-between bg-white rounded-xl shadow-sm p-4 mb-4">
       <button
         onClick={goToPreviousDay}
-        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        className="p-2 rounded-full hover:bg-slate-100 transition-colors"
         aria-label="Previous day"
       >
         <svg
@@ -50,7 +50,7 @@ export default function DateSelector({ date, onDateChange }: DateSelectorProps) 
           viewBox="0 0 24 24"
           strokeWidth={2}
           stroke="currentColor"
-          className="w-5 h-5 text-gray-600"
+          className="w-5 h-5 text-slate-600"
         >
           <path
             strokeLinecap="round"
@@ -60,7 +60,7 @@ export default function DateSelector({ date, onDateChange }: DateSelectorProps) 
         </svg>
       </button>
 
-      <span className="text-lg font-semibold text-gray-900">
+      <span className="text-lg font-semibold text-slate-900">
         {formatDate(date)}
       </span>
 
@@ -69,8 +69,8 @@ export default function DateSelector({ date, onDateChange }: DateSelectorProps) 
         disabled={isToday}
         className={`p-2 rounded-full transition-colors ${
           isToday
-            ? "text-gray-300 cursor-not-allowed"
-            : "hover:bg-gray-100 text-gray-600"
+            ? "text-slate-300 cursor-not-allowed"
+            : "hover:bg-slate-100 text-slate-600"
         }`}
         aria-label="Next day"
       >

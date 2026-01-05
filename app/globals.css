@@ -1,28 +1,71 @@
 @import "tailwindcss";
 
+/* ============================================
+   Z-FIT DESIGN SYSTEM
+   A cohesive, modern fitness app color palette
+   ============================================ */
+
 :root {
-  --color-primary: #22c55e;
-  --color-primary-dark: #16a34a;
-  --color-primary-light: #86efac;
-  --background: #f9fafb;
-  --foreground: #171717;
+  /* Primary Brand Colors - Teal */
+  --zfit-primary: #0d9488;
+  --zfit-primary-dark: #0f766e;
+  --zfit-primary-light: #14b8a6;
+  --zfit-primary-subtle: #ccfbf1;
+
+  /* Accent - For CTAs and highlights */
+  --zfit-accent: #10b981;
+  --zfit-accent-dark: #059669;
+
+  /* Neutral Palette - Clean grays */
+  --zfit-gray-50: #f8fafc;
+  --zfit-gray-100: #f1f5f9;
+  --zfit-gray-200: #e2e8f0;
+  --zfit-gray-300: #cbd5e1;
+  --zfit-gray-400: #94a3b8;
+  --zfit-gray-500: #64748b;
+  --zfit-gray-600: #475569;
+  --zfit-gray-700: #334155;
+  --zfit-gray-800: #1e293b;
+  --zfit-gray-900: #0f172a;
+
+  /* Semantic - Macros */
+  --zfit-protein: #6366f1;  /* Indigo - Protein */
+  --zfit-carbs: #f59e0b;    /* Amber - Carbs */
+  --zfit-fat: #ec4899;      /* Pink - Fat */
+
+  /* Semantic - Status */
+  --zfit-success: #10b981;
+  --zfit-warning: #f59e0b;
+  --zfit-error: #ef4444;
+
+  /* Surfaces */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+
+  /* Borders & Dividers */
+  --border-color: #e2e8f0;
+  --divider-color: #f1f5f9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: var(--color-primary);
-  --color-primary-dark: var(--color-primary-dark);
-  --color-primary-light: var(--color-primary-light);
+  --color-primary: var(--zfit-primary);
+  --color-primary-dark: var(--zfit-primary-dark);
+  --color-primary-light: var(--zfit-primary-light);
   --font-sans: var(--font-inter);
+
+  /* Custom colors for Tailwind */
+  --color-zfit-primary: var(--zfit-primary);
+  --color-zfit-accent: var(--zfit-accent);
+  --color-zfit-protein: var(--zfit-protein);
+  --color-zfit-carbs: var(--zfit-carbs);
+  --color-zfit-fat: var(--zfit-fat);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Force light mode - no dark mode support for now */
 
 html,
 body {

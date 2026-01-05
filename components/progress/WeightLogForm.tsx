@@ -37,13 +37,13 @@ export default function WeightLogForm({ onSaved }: WeightLogFormProps) {
           onChange={(e) => setWeight(e.target.value)}
           placeholder="Enter weight"
           disabled={saving}
-          className="flex-1 px-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
         />
         <select
           value={unit}
           onChange={(e) => setUnit(e.target.value as "kg" | "lbs")}
           disabled={saving}
-          className="px-3 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+          className="px-3 py-2 bg-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
         >
           <option value="kg">kg</option>
           <option value="lbs">lbs</option>
@@ -52,19 +52,19 @@ export default function WeightLogForm({ onSaved }: WeightLogFormProps) {
       <button
         type="submit"
         disabled={!weight || saving}
-        className="w-full py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-2 bg-teal-500 text-white font-medium rounded-lg hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {saving ? "Saving..." : "Log Weight"}
       </button>
 
       {error && (
-        <div className="mt-3 p-2 bg-red-50 text-red-600 rounded-lg text-sm text-center">
+        <div className="mt-3 p-2 bg-rose-50 text-rose-600 rounded-lg text-sm text-center">
           {error}
         </div>
       )}
 
       {saved && (
-        <div className="mt-3 p-2 bg-green-50 text-green-600 rounded-lg text-sm text-center">
+        <div className="mt-3 p-2 bg-teal-50 text-teal-600 rounded-lg text-sm text-center">
           Weight logged successfully!
         </div>
       )}

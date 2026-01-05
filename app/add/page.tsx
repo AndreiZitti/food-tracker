@@ -12,16 +12,16 @@ export default function AddFoodPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Add Food</h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-4">Add Food</h1>
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-gray-200 mb-4">
+      <div className="flex border-b border-slate-200 mb-4">
         <button
           onClick={() => setActiveTab("search")}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "search"
-              ? "border-green-500 text-green-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-teal-500 text-teal-600"
+              : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
           Search
@@ -30,8 +30,8 @@ export default function AddFoodPage() {
           onClick={() => setActiveTab("scan")}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "scan"
-              ? "border-green-500 text-green-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-teal-500 text-teal-600"
+              : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
           Scan Barcode
@@ -40,8 +40,8 @@ export default function AddFoodPage() {
           onClick={() => setActiveTab("manual")}
           className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "manual"
-              ? "border-green-500 text-green-600"
-              : "border-transparent text-gray-500 hover:text-gray-700"
+              ? "border-teal-500 text-teal-600"
+              : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
           Manual
