@@ -141,26 +141,24 @@ export default function NutritionLabelScanner() {
       {/* Hidden canvas for capturing photos */}
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Hidden file input */}
+      {/* Hidden file input - no capture attribute so it opens gallery */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFileUpload}
         className="hidden"
       />
 
-      {/* Camera View */}
-      {capturing && (
-        <div className="mb-4">
-          <video
-            ref={videoRef}
-            playsInline
-            autoPlay
-            muted
-            className="w-full aspect-[4/3] bg-slate-900 rounded-xl object-cover"
-          />
+      {/* Camera View - always render video but hide when not capturing */}
+      <div className={`mb-4 ${capturing ? "" : "hidden"}`}>
+        <video
+          ref={videoRef}
+          playsInline
+          autoPlay
+          muted
+          className="w-full aspect-[4/3] bg-slate-900 rounded-xl object-cover"
+        />
           <div className="flex gap-2 mt-3">
             <button
               onClick={capturePhoto}
@@ -194,8 +192,7 @@ export default function NutritionLabelScanner() {
               Cancel
             </button>
           </div>
-        </div>
-      )}
+      </div>
 
       {/* Captured Image Preview */}
       {capturedImage && !capturing && (
