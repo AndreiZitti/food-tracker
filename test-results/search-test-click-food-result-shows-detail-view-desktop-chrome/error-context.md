@@ -1,0 +1,70 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Add Food" [level=1] [ref=e4]
+      - generic [ref=e5]:
+        - button "Search" [ref=e6]
+        - button "Scan Barcode" [ref=e7]
+        - button "Manual" [ref=e8]
+      - generic [ref=e9]:
+        - button "Back to search" [ref=e10]:
+          - img [ref=e11]
+          - text: Back to search
+        - generic [ref=e13]:
+          - heading "Double cheeseburger" [level=2] [ref=e14]
+          - paragraph [ref=e15]: Mc donalds
+          - paragraph [ref=e16]: 172.0g
+        - generic [ref=e17]:
+          - generic [ref=e18]: Servings
+          - generic [ref=e19]:
+            - button "−" [ref=e20]
+            - spinbutton [ref=e21]: "1"
+            - button "+" [ref=e22]
+        - generic [ref=e23]:
+          - heading "Nutrition (1 serving)" [level=3] [ref=e24]
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - generic [ref=e27]: "760"
+              - generic [ref=e28]: kcal
+            - generic [ref=e29]:
+              - generic [ref=e30]: 46.4g
+              - generic [ref=e31]: Protein
+            - generic [ref=e32]:
+              - generic [ref=e33]: 53.3g
+              - generic [ref=e34]: Carbs
+            - generic [ref=e35]:
+              - generic [ref=e36]: 39.6g
+              - generic [ref=e37]: Fat
+        - generic [ref=e38]:
+          - generic [ref=e39]: Add to
+          - generic [ref=e40]:
+            - button "Breakfast" [ref=e41]
+            - button "Lunch" [ref=e42]
+            - button "Dinner" [ref=e43]
+            - button "Snack" [ref=e44]
+        - button "Add to Breakfast" [ref=e45]
+  - navigation [ref=e46]:
+    - generic [ref=e47]:
+      - link "Diary" [ref=e48] [cursor=pointer]:
+        - /url: /diary
+        - img [ref=e50]
+        - generic [ref=e52]: Diary
+      - link "Add" [ref=e53] [cursor=pointer]:
+        - /url: /add
+        - img [ref=e55]
+        - generic [ref=e57]: Add
+      - link "Progress" [ref=e58] [cursor=pointer]:
+        - /url: /progress
+        - img [ref=e60]
+        - generic [ref=e62]: Progress
+      - link "Settings" [ref=e63] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e65]
+        - generic [ref=e68]: Settings
+  - button "Open Next.js Dev Tools" [ref=e74] [cursor=pointer]:
+    - img [ref=e75]
+  - alert [ref=e78]
+```
