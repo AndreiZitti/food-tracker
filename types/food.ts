@@ -124,7 +124,7 @@ export interface OpenFoodFactsProductResponse {
 /**
  * Source of food data
  */
-export type FoodSource = 'openfoodfacts' | 'custom' | 'manual';
+export type FoodSource = 'openfoodfacts' | 'custom' | 'manual' | 'label_scan';
 
 /**
  * Meal type for food logging

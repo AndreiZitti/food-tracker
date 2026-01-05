@@ -3,9 +3,10 @@
 import { useState } from "react";
 import FoodSearch from "@/components/food/FoodSearch";
 import BarcodeScanner from "@/components/food/BarcodeScanner";
+import NutritionLabelScanner from "@/components/food/NutritionLabelScanner";
 import ManualEntryForm from "@/components/food/ManualEntryForm";
 
-type Tab = "search" | "scan" | "manual";
+type Tab = "search" | "scan" | "label" | "manual";
 
 export default function AddFoodPage() {
   const [activeTab, setActiveTab] = useState<Tab>("search");
@@ -34,7 +35,17 @@ export default function AddFoodPage() {
               : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
-          Scan Barcode
+          Barcode
+        </button>
+        <button
+          onClick={() => setActiveTab("label")}
+          className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === "label"
+              ? "border-teal-500 text-teal-600"
+              : "border-transparent text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          AI Label
         </button>
         <button
           onClick={() => setActiveTab("manual")}
@@ -51,6 +62,7 @@ export default function AddFoodPage() {
       {/* Tab Content */}
       {activeTab === "search" && <FoodSearch />}
       {activeTab === "scan" && <BarcodeScanner />}
+      {activeTab === "label" && <NutritionLabelScanner />}
       {activeTab === "manual" && <ManualEntryForm />}
     </div>
   );
