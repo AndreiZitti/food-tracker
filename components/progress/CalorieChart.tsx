@@ -10,39 +10,76 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface CalorieChartProps {
-  timeRange: "7d" | "30d";
+interface CalorieDataPoint {
+  date: string;
+  dateFormatted: string;
+  calories: number;
+  goal: number;
 }
 
-// Generate sample data for demonstration
-const generateData = (days: number) => {
-  const data = [];
-  const today = new Date();
+interface CalorieChartProps {
+  data: CalorieDataPoint[];
+  timeRange: "7d" | "30d";
+  loading?: boolean;
+}
 
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    data.push({
-      date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      calories: Math.floor(Math.random() * 800) + 1600,
-      goal: 2000,
-    });
+export default function CalorieChart({
+  data,
+  timeRange,
+  loading,
+}: CalorieChartProps) {
+  if (loading) {
+    return (
+      <div
+        className="h-64 flex items-center justify-center"
+        data-testid="calorie-chart"
+      >
+        <div className="text-gray-400">Loading chart data...</div>
+      </div>
+    );
   }
 
-  return data;
-};
+  if (data.length === 0) {
+    return (
+      <div
+        className="h-64 flex items-center justify-center"
+        data-testid="calorie-chart"
+      >
+        <div className="text-center text-gray-400">
+          <p>No calorie data available</p>
+          <p className="text-sm mt-1">Start logging food to see your progress</p>
+        </div>
+      </div>
+    );
+  }
 
-export default function CalorieChart({ timeRange }: CalorieChartProps) {
-  const days = timeRange === "7d" ? 7 : 30;
-  const data = generateData(days);
+  // Check if there's any actual calorie data
+  const hasCalories = data.some((d) => d.calories > 0);
+
+  if (!hasCalories) {
+    return (
+      <div
+        className="h-64 flex items-center justify-center"
+        data-testid="calorie-chart"
+      >
+        <div className="text-center text-gray-400">
+          <p>No calories logged yet</p>
+          <p className="text-sm mt-1">Add food to your diary to track progress</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-64" data-testid="calorie-chart">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
-            dataKey="date"
+            dataKey="dateFormatted"
             tick={{ fontSize: 10, fill: "#9ca3af" }}
             tickLine={false}
             axisLine={{ stroke: "#e5e7eb" }}
@@ -61,6 +98,10 @@ export default function CalorieChart({ timeRange }: CalorieChartProps) {
               borderRadius: "8px",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
+            formatter={(value) => [
+              `${Math.round(value as number)} kcal`,
+              "",
+            ]}
           />
           <Line
             type="monotone"
@@ -69,6 +110,7 @@ export default function CalorieChart({ timeRange }: CalorieChartProps) {
             strokeDasharray="5 5"
             strokeWidth={2}
             dot={false}
+            name="goal"
           />
           <Line
             type="monotone"
@@ -77,6 +119,8 @@ export default function CalorieChart({ timeRange }: CalorieChartProps) {
             strokeWidth={2}
             dot={{ fill: "#22c55e", strokeWidth: 2, r: 3 }}
             activeDot={{ r: 5 }}
+            name="calories"
+            connectNulls
           />
         </LineChart>
       </ResponsiveContainer>

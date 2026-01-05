@@ -1,22 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { useWeightLog } from "@/lib/hooks/useProgressData";
 
-export default function WeightLogForm() {
+interface WeightLogFormProps {
+  onSaved?: () => void;
+}
+
+export default function WeightLogForm({ onSaved }: WeightLogFormProps) {
   const [weight, setWeight] = useState("");
   const [unit, setUnit] = useState<"kg" | "lbs">("kg");
   const [saved, setSaved] = useState(false);
+  const { logWeight, saving, error } = useWeightLog();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!weight) return;
 
-    // Here we would save to the database
-    console.log("Logging weight:", { weight: parseFloat(weight), unit });
+    const success = await logWeight(parseFloat(weight), unit);
 
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    setWeight("");
+    if (success) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      setWeight("");
+      onSaved?.();
+    }
   };
 
   return (
@@ -28,12 +36,14 @@ export default function WeightLogForm() {
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
           placeholder="Enter weight"
-          className="flex-1 px-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          disabled={saving}
+          className="flex-1 px-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
         />
         <select
           value={unit}
           onChange={(e) => setUnit(e.target.value as "kg" | "lbs")}
-          className="px-3 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          disabled={saving}
+          className="px-3 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
         >
           <option value="kg">kg</option>
           <option value="lbs">lbs</option>
@@ -41,11 +51,17 @@ export default function WeightLogForm() {
       </div>
       <button
         type="submit"
-        disabled={!weight}
+        disabled={!weight || saving}
         className="w-full py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        Log Weight
+        {saving ? "Saving..." : "Log Weight"}
       </button>
+
+      {error && (
+        <div className="mt-3 p-2 bg-red-50 text-red-600 rounded-lg text-sm text-center">
+          {error}
+        </div>
+      )}
 
       {saved && (
         <div className="mt-3 p-2 bg-green-50 text-green-600 rounded-lg text-sm text-center">

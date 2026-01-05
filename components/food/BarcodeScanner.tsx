@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { type FoodItem } from "@/types/food";
+import FoodDetail from "./FoodDetail";
 
 export default function BarcodeScanner() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const [foundFood, setFoundFood] = useState<FoodItem | null>(null);
   const scannerRef = useRef<HTMLDivElement>(null);
   const html5QrCodeRef = useRef<unknown>(null);
 
@@ -19,8 +23,37 @@ export default function BarcodeScanner() {
     };
   }, []);
 
+  const lookupBarcode = async (barcode: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/food/barcode?code=${encodeURIComponent(barcode)}`
+      );
+
+      if (response.ok) {
+        const food: FoodItem = await response.json();
+        setFoundFood(food);
+      } else if (response.status === 404) {
+        setError(
+          `Product not found for barcode: ${barcode}. Try searching manually.`
+        );
+      } else {
+        setError("Failed to look up barcode. Please try again.");
+      }
+    } catch (err) {
+      console.error("Barcode lookup error:", err);
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const startScanning = async () => {
     setError(null);
+    setScannedCode(null);
+    setFoundFood(null);
     setScanning(true);
 
     try {
@@ -34,11 +67,12 @@ export default function BarcodeScanner() {
           fps: 10,
           qrbox: { width: 250, height: 150 },
         },
-        (decodedText) => {
-          setResult(decodedText);
-          html5QrCode.stop().catch(() => {});
+        async (decodedText) => {
+          setScannedCode(decodedText);
+          await html5QrCode.stop().catch(() => {});
           setScanning(false);
-          // TODO: Look up product by barcode
+          // Look up the product
+          await lookupBarcode(decodedText);
         },
         () => {
           // Ignore scanning errors (no QR code found)
@@ -63,6 +97,17 @@ export default function BarcodeScanner() {
     setScanning(false);
   };
 
+  const resetScanner = () => {
+    setError(null);
+    setScannedCode(null);
+    setFoundFood(null);
+  };
+
+  // Show food detail view when product is found
+  if (foundFood) {
+    return <FoodDetail food={foundFood} onBack={resetScanner} />;
+  }
+
   return (
     <div>
       {/* Scanner Container */}
@@ -74,8 +119,35 @@ export default function BarcodeScanner() {
         }`}
       />
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-8">
+          <svg
+            className="animate-spin h-8 w-8 mx-auto mb-3 text-green-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p className="text-gray-600">Looking up barcode: {scannedCode}</p>
+        </div>
+      )}
+
       {/* Controls */}
-      {!scanning ? (
+      {!scanning && !loading && (
         <div className="text-center">
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -83,9 +155,9 @@ export default function BarcodeScanner() {
             </div>
           )}
 
-          {result && (
+          {scannedCode && !error && (
             <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm">
-              Barcode found: {result}
+              Barcode scanned: {scannedCode}
             </div>
           )}
 
@@ -112,14 +184,52 @@ export default function BarcodeScanner() {
                 d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"
               />
             </svg>
-            Start Scanning
+            {scannedCode ? "Scan Another" : "Start Scanning"}
           </button>
 
           <p className="mt-3 text-sm text-gray-500">
             Point your camera at a barcode to scan
           </p>
+
+          {/* Manual barcode entry */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-500 mb-3">
+              Or enter barcode manually:
+            </p>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const input = e.currentTarget.elements.namedItem(
+                  "barcode"
+                ) as HTMLInputElement;
+                const code = input.value.trim();
+                if (code) {
+                  setScannedCode(code);
+                  await lookupBarcode(code);
+                }
+              }}
+              className="flex gap-2"
+            >
+              <input
+                type="text"
+                name="barcode"
+                placeholder="Enter barcode number"
+                pattern="[0-9]{8,14}"
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                Look up
+              </button>
+            </form>
+          </div>
         </div>
-      ) : (
+      )}
+
+      {/* Scanning controls */}
+      {scanning && (
         <button
           onClick={stopScanning}
           className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors"
