@@ -2,9 +2,9 @@
 
 ![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6&height=120&section=header&animation=fadeIn)
 
-# FitTrack
+# Food Tracker
 
-_Simple calorie & macro tracker PWA — like MyFitnessPal, but yours_
+_Simple calorie & macro tracker PWA with AI-powered food labeling_
 
 ![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
@@ -17,7 +17,7 @@ _Simple calorie & macro tracker PWA — like MyFitnessPal, but yours_
 ## How it works
 
 ```
-[Search / Scan Barcode] → [Adjust Serving] → [Log to Meal] → [Track Progress]
+[Search / Scan / Photo] → [AI Labels Food] → [Log to Meal] → [Track Progress]
 ```
 
 ## Tech Stack
@@ -28,6 +28,7 @@ _Simple calorie & macro tracker PWA — like MyFitnessPal, but yours_
 | Styling | Tailwind CSS |
 | Database | Supabase |
 | Food Data | Open Food Facts API |
+| AI Labeling | Gemini Vision |
 | Charts | Recharts |
 | PWA | next-pwa |
 
@@ -35,15 +36,15 @@ _Simple calorie & macro tracker PWA — like MyFitnessPal, but yours_
 
 ```bash
 # Clone
-git clone https://github.com/AndreiZitti/fittrack.git
-cd fittrack
+git clone https://github.com/AndreiZitti/food-tracker.git
+cd food-tracker
 
 # Install
 npm install
 
 # Environment
 cp .env.example .env.local
-# Add your Supabase keys
+# Add your API keys
 
 # Run
 npm run dev
@@ -56,6 +57,7 @@ Open http://localhost:3000
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GEMINI_API_KEY=
 ```
 
 ---
