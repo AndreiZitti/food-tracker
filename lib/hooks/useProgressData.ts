@@ -1,4 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  getFoodLogEntries,
+  getWeightLogEntries,
+  addWeightLogEntry,
+  getSettings,
+  getAllFoodLogEntries,
+} from "@/lib/localStorage";
 
 interface CalorieData {
   date: string;
@@ -12,21 +19,6 @@ interface WeightData {
   dateFormatted: string;
   weight: number;
   unit: string;
-}
-
-interface ApiWeightLog {
-  id: string;
-  user_id: string;
-  date: string;
-  weight: number;
-  unit: string;
-  created_at: string;
-}
-
-interface ApiFoodLog {
-  id: string;
-  date: string;
-  calories: number;
 }
 
 interface ProgressData {
@@ -43,29 +35,16 @@ export function useProgressData(days: number = 7): ProgressData {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Get calorie goal from localStorage
-  const getCalorieGoal = (): number => {
-    if (typeof window === "undefined") return 2000;
-    const settings = localStorage.getItem("fittrack-settings");
-    if (settings) {
-      try {
-        return JSON.parse(settings).calorieGoal || 2000;
-      } catch {
-        return 2000;
-      }
-    }
-    return 2000;
-  };
-
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(() => {
     setLoading(true);
     setError(null);
 
     try {
-      // Fetch calorie data for each day
-      const caloriePromises: Promise<CalorieData>[] = [];
-      const goal = getCalorieGoal();
+      const settings = getSettings();
+      const goal = settings.calorieGoal;
 
+      // Get calorie data for each day
+      const calorieResults: CalorieData[] = [];
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -75,52 +54,34 @@ export function useProgressData(days: number = 7): ProgressData {
           day: "numeric",
         });
 
-        caloriePromises.push(
-          fetch(`/api/log?date=${dateStr}`)
-            .then((res) => res.json())
-            .then((entries: ApiFoodLog[]) => {
-              const totalCalories = Array.isArray(entries)
-                ? entries.reduce((sum, e) => sum + (e.calories || 0), 0)
-                : 0;
-              return {
-                date: dateStr,
-                dateFormatted,
-                calories: totalCalories,
-                goal,
-              };
-            })
-            .catch(() => ({
-              date: dateStr,
-              dateFormatted,
-              calories: 0,
-              goal,
-            }))
-        );
+        const entries = getFoodLogEntries(dateStr);
+        const totalCalories = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
+
+        calorieResults.push({
+          date: dateStr,
+          dateFormatted,
+          calories: totalCalories,
+          goal,
+        });
       }
 
-      // Fetch weight data
-      const weightResponse = await fetch(`/api/weight?days=${days}`);
-      const weightEntries: ApiWeightLog[] = await weightResponse.json();
-
-      // Process calorie data
-      const calorieResults = await Promise.all(caloriePromises);
       setCalorieData(calorieResults);
 
-      // Process weight data - map API response to display format
-      const processedWeightData: WeightData[] = Array.isArray(weightEntries)
-        ? weightEntries.map((entry) => {
-            const date = new Date(entry.date);
-            return {
-              date: entry.date,
-              dateFormatted: date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              }),
-              weight: entry.weight,
-              unit: entry.unit,
-            };
-          })
-        : [];
+      // Get weight data
+      const weightEntries = getWeightLogEntries(days);
+      const processedWeightData: WeightData[] = weightEntries.map((entry) => {
+        const date = new Date(entry.date);
+        return {
+          date: entry.date,
+          dateFormatted: date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          weight: entry.weight,
+          unit: entry.unit,
+        };
+      });
+
       setWeightData(processedWeightData);
     } catch (err) {
       console.error("Error fetching progress data:", err);
@@ -155,20 +116,7 @@ export function useWeightLog() {
     setError(null);
 
     try {
-      const response = await fetch("/api/weight", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          weight,
-          unit,
-          date: new Date().toISOString().split("T")[0],
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save weight");
-      }
-
+      addWeightLogEntry(weight, unit);
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save weight");
@@ -179,4 +127,41 @@ export function useWeightLog() {
   };
 
   return { logWeight, saving, error };
+}
+
+// Hook to get calorie data for a specific date range (for charts)
+export function useCalorieHistory(days: number = 30) {
+  const [data, setData] = useState<CalorieData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const settings = getSettings();
+    const goal = settings.calorieGoal;
+
+    const results: CalorieData[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+      const dateFormatted = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+
+      const entries = getFoodLogEntries(dateStr);
+      const totalCalories = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
+
+      results.push({
+        date: dateStr,
+        dateFormatted,
+        calories: totalCalories,
+        goal,
+      });
+    }
+
+    setData(results);
+    setLoading(false);
+  }, [days]);
+
+  return { data, loading };
 }

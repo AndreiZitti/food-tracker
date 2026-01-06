@@ -43,29 +43,18 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ["/diary", "/add", "/progress", "/settings"];
-  const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
-
-  // Protected API routes - return 401 for unauthenticated requests
-  const protectedApiPaths = ["/api/food/scan-label", "/api/log", "/api/weight", "/api/settings", "/api/food/recent"];
+  // Only protect the Gemini AI API - everything else works without login
+  // This keeps the AI feature (nutrition label scanning) behind authentication
+  const protectedApiPaths = ["/api/food/scan-label"];
   const isProtectedApiPath = protectedApiPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
 
   if (isProtectedApiPath && !user) {
     return NextResponse.json(
-      { error: "Authentication required" },
+      { error: "Authentication required for AI features. Please sign in." },
       { status: 401 }
     );
-  }
-
-  if (isProtectedPath && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
   }
 
   // Redirect logged-in users away from login page

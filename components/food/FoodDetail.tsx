@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { type FoodItem } from "@/types/food";
+import { addFoodLogEntry } from "@/lib/localStorage";
 
 type Meal = "breakfast" | "lunch" | "dinner" | "snack";
 
@@ -26,34 +27,27 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
   });
   const [adding, setAdding] = useState(false);
 
-  const handleAddFood = async () => {
+  const handleAddFood = () => {
     setAdding(true);
     try {
       const logDate = date || new Date().toISOString().split("T")[0];
-      const response = await fetch("/api/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          date: logDate,
-          meal: selectedMeal,
-          foodName: food.name,
-          brand: food.brand,
-          servingSize: food.servingSize,
-          servings: servings,
-          calories: Math.round(food.calories * servings),
-          protein: Math.round(food.protein * servings * 10) / 10,
-          carbs: Math.round(food.carbs * servings * 10) / 10,
-          fat: Math.round(food.fat * servings * 10) / 10,
-          source: food.source,
-          sourceId: food.sourceId,
-        }),
+
+      addFoodLogEntry({
+        date: logDate,
+        meal: selectedMeal,
+        foodName: food.name,
+        brand: food.brand,
+        servingSize: food.servingSize,
+        servings: servings,
+        calories: Math.round(food.calories * servings),
+        protein: Math.round(food.protein * servings * 10) / 10,
+        carbs: Math.round(food.carbs * servings * 10) / 10,
+        fat: Math.round(food.fat * servings * 10) / 10,
+        source: food.source,
+        sourceId: food.sourceId,
       });
 
-      if (response.ok) {
-        router.push("/diary");
-      } else {
-        alert("Failed to add food. Please try again.");
-      }
+      router.push("/diary");
     } catch (error) {
       console.error("Failed to add food:", error);
       alert("Failed to add food. Please try again.");
