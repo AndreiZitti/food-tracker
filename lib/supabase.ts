@@ -14,7 +14,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 // Create Supabase client only if credentials are provided
 // This allows the app to work in demo mode without Supabase
-let supabase: SupabaseClient | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let supabase: SupabaseClient<any, 'food-tracker', any> | null = null;
 
 if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey, {

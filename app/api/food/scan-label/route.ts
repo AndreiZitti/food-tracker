@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@/lib/supabase/server";
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -53,6 +54,17 @@ Important:
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication - only logged-in users can use this API
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     // Check for API key
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(

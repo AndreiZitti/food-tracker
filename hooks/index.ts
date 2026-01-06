@@ -10,3 +10,5 @@ export {
   type UseFoodSearchOptions,
   type UseFoodLookupState,
 } from './useFoodSearch';
+
+export { useAuth } from './useAuth';
