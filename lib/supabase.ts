@@ -17,7 +17,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 let supabase: SupabaseClient | null = null;
 
 if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    db: {
+      schema: 'food-tracker'
+    }
+  });
 }
 
 // Check if Supabase is configured
@@ -248,4 +252,75 @@ export async function addCustomFood(
   }
 
   return data;
+}
+
+// Get recent/frequent foods for quick re-adding
+export interface RecentFood {
+  food_name: string;
+  brand?: string;
+  serving_size: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  source: string;
+  source_id?: string;
+  count: number;
+  last_used: string;
+}
+
+export async function getRecentFoods(userId: string, limit: number = 20): Promise<RecentFood[]> {
+  if (!supabase) return [];
+
+  // Get unique foods ordered by most recently used
+  // We group by food_name + brand to deduplicate
+  const { data, error } = await supabase
+    .from("food_log")
+    .select("food_name, brand, serving_size, calories, protein, carbs, fat, source, source_id, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(100); // Get more to allow for deduplication
+
+  if (error) {
+    console.error("Error fetching recent foods:", error);
+    return [];
+  }
+
+  if (!data) return [];
+
+  // Deduplicate by food_name + brand, keeping count and most recent
+  const foodMap = new Map<string, RecentFood>();
+
+  for (const entry of data) {
+    const key = `${entry.food_name}|${entry.brand || ""}`;
+
+    if (foodMap.has(key)) {
+      const existing = foodMap.get(key)!;
+      existing.count += 1;
+    } else {
+      foodMap.set(key, {
+        food_name: entry.food_name,
+        brand: entry.brand,
+        serving_size: entry.serving_size,
+        calories: entry.calories,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fat: entry.fat,
+        source: entry.source,
+        source_id: entry.source_id,
+        count: 1,
+        last_used: entry.created_at,
+      });
+    }
+  }
+
+  // Sort by count (most frequent first), then by recency
+  const sortedFoods = Array.from(foodMap.values())
+    .sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return new Date(b.last_used).getTime() - new Date(a.last_used).getTime();
+    })
+    .slice(0, limit);
+
+  return sortedFoods;
 }
