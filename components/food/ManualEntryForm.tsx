@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   name: string;
@@ -10,9 +11,11 @@ interface FormData {
   protein: string;
   carbs: string;
   fat: string;
+  meal: string;
 }
 
 export default function ManualEntryForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     brand: "",
@@ -21,10 +24,12 @@ export default function ManualEntryForm() {
     protein: "",
     carbs: "",
     fat: "",
+    meal: "breakfast",
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -32,20 +37,38 @@ export default function ManualEntryForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError(null);
 
     try {
-      // TODO: Save to database and add to diary
-      console.log("Saving food:", formData);
-      // Reset form after saving
-      setFormData({
-        name: "",
-        brand: "",
-        servingSize: "100g",
-        calories: "",
-        protein: "",
-        carbs: "",
-        fat: "",
+      const today = new Date().toISOString().split("T")[0];
+
+      const response = await fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: today,
+          meal: formData.meal,
+          foodName: formData.name,
+          brand: formData.brand || null,
+          servingSize: formData.servingSize,
+          servings: 1,
+          calories: parseInt(formData.calories) || 0,
+          protein: parseFloat(formData.protein) || 0,
+          carbs: parseFloat(formData.carbs) || 0,
+          fat: parseFloat(formData.fat) || 0,
+          source: "manual",
+        }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to save food");
+      }
+
+      // Success - redirect to diary
+      router.push("/diary");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save food");
     } finally {
       setSaving(false);
     }
@@ -53,6 +76,35 @@ export default function ManualEntryForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Error Message */}
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Meal Selector */}
+      <div>
+        <label
+          htmlFor="meal"
+          className="block text-sm font-medium text-slate-700 mb-1"
+        >
+          Meal *
+        </label>
+        <select
+          id="meal"
+          name="meal"
+          value={formData.meal}
+          onChange={handleChange}
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+        >
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+        </select>
+      </div>
+
       {/* Food Name */}
       <div>
         <label
