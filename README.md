@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+
+![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6&height=120&section=header&animation=fadeIn)
+
+# FitTrack
+
+_Simple calorie & macro tracker PWA — like MyFitnessPal, but yours_
+
+![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-38bdf8?logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3fcf8e?logo=supabase&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5a0fc8?logo=pwa&logoColor=white)
+
+</div>
+
+## How it works
+
+```
+[Search / Scan Barcode] → [Adjust Serving] → [Log to Meal] → [Track Progress]
+```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 14, React 18 |
+| Styling | Tailwind CSS |
+| Database | Supabase |
+| Food Data | Open Food Facts API |
+| Charts | Recharts |
+| PWA | next-pwa |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Clone
+git clone https://github.com/AndreiZitti/fittrack.git
+cd fittrack
+
+# Install
+npm install
+
+# Environment
+cp .env.example .env.local
+# Add your Supabase keys
+
+# Run
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+<div align="center">
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## More Projects
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Check out the full collection at **[zitti.ro](https://zitti.ro)**
 
-## Deploy on Vercel
+Don't want to self-host? [Contact me](https://zitti.ro) — happy to set you up with an account.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![footer](https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6&height=80&section=footer)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</div>
