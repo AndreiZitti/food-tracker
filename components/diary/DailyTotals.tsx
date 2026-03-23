@@ -34,15 +34,23 @@ export default function DailyTotals({ totals, loading }: DailyTotalsProps) {
   const [goals, setGoals] = useState<Goals>(defaultGoals);
 
   useEffect(() => {
-    // Load goals from localStorage
-    const savedSettings = localStorage.getItem("fittrack-settings");
-    if (savedSettings) {
+    async function loadGoals() {
       try {
-        setGoals(JSON.parse(savedSettings));
+        const res = await fetch("/api/settings");
+        if (!res.ok) return;
+        const data = await res.json();
+        setGoals({
+          calorieGoal: data.calorie_goal ?? 2000,
+          proteinGoal: data.protein_goal ?? 150,
+          carbsGoal: data.carbs_goal ?? 200,
+          fatGoal: data.fat_goal ?? 65,
+          displayMode: data.display_mode ?? "simple",
+        });
       } catch {
-        // Ignore parse errors
+        // Use defaults
       }
     }
+    loadGoals();
   }, []);
 
   const caloriePercentage = Math.min(

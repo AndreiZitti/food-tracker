@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addFoodLogEntry } from "@/lib/localStorage";
 
 interface FormData {
   name: string;
@@ -35,7 +34,7 @@ export default function ManualEntryForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -43,21 +42,26 @@ export default function ManualEntryForm() {
     try {
       const today = new Date().toISOString().split("T")[0];
 
-      addFoodLogEntry({
-        date: today,
-        meal: formData.meal,
-        foodName: formData.name,
-        brand: formData.brand || undefined,
-        servingSize: formData.servingSize,
-        servings: 1,
-        calories: parseInt(formData.calories) || 0,
-        protein: parseFloat(formData.protein) || 0,
-        carbs: parseFloat(formData.carbs) || 0,
-        fat: parseFloat(formData.fat) || 0,
-        source: "manual",
+      const res = await fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: today,
+          meal: formData.meal,
+          foodName: formData.name,
+          brand: formData.brand || undefined,
+          servingSize: formData.servingSize,
+          servings: 1,
+          calories: parseInt(formData.calories) || 0,
+          protein: parseFloat(formData.protein) || 0,
+          carbs: parseFloat(formData.carbs) || 0,
+          fat: parseFloat(formData.fat) || 0,
+          source: "manual",
+        }),
       });
 
-      // Success - redirect to diary
+      if (!res.ok) throw new Error("Failed to save food");
+
       router.push("/diary");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save food");

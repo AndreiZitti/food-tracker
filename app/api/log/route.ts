@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFoodLog, addFoodLogEntry, deleteFoodLogEntry } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   const searchParams = request.nextUrl.searchParams;
   const date = searchParams.get("date");
-  const userId = searchParams.get("userId") || "demo-user"; // TODO: Get from auth
 
   if (!date) {
     return NextResponse.json(
@@ -14,7 +17,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const entries = await getFoodLog(userId, date);
+    const entries = await getFoodLog(auth.user.id, date);
     return NextResponse.json(entries);
   } catch (error) {
     console.error("Error fetching food log:", error);
@@ -26,12 +29,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await request.json();
-    const userId = body.userId || "demo-user"; // TODO: Get from auth
 
     const entry = await addFoodLogEntry({
-      user_id: userId,
+      user_id: auth.user.id,
       date: body.date,
       meal: body.meal,
       food_name: body.foodName,
@@ -57,6 +62,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
 

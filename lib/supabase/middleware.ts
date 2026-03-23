@@ -43,12 +43,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Only protect the Gemini AI API - everything else works without login
-  // This keeps the AI feature (nutrition label scanning) behind authentication
-  const protectedApiPaths = ["/api/food/scan-label"];
-  const isProtectedApiPath = protectedApiPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+  // Protect all API routes except public ones (food search and barcode lookup)
+  const publicApiPaths = ["/api/food/search", "/api/food/barcode"];
+  const isPublicApi = publicApiPaths.some((p) =>
+    request.nextUrl.pathname.startsWith(p)
   );
+  const isProtectedApiPath = request.nextUrl.pathname.startsWith("/api/") && !isPublicApi;
 
   if (isProtectedApiPath && !user) {
     return NextResponse.json(

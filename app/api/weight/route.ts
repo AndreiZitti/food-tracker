@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getWeightLog, addWeightLogEntry } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   const searchParams = request.nextUrl.searchParams;
-  const userId = searchParams.get("userId") || "demo-user";
   const days = parseInt(searchParams.get("days") || "30");
 
   try {
-    const entries = await getWeightLog(userId, days);
+    const entries = await getWeightLog(auth.user.id, days);
     return NextResponse.json(entries);
   } catch (error) {
     console.error("Error fetching weight log:", error);
@@ -19,12 +22,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await request.json();
-    const userId = body.userId || "demo-user";
 
     const entry = await addWeightLogEntry({
-      user_id: userId,
+      user_id: auth.user.id,
       date: body.date || new Date().toISOString().split("T")[0],
       weight: body.weight,
       unit: body.unit || "kg",

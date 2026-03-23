@@ -1,31 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { type FoodLogEntry, type MealType } from "@/types/food";
-import {
-  getFoodLogEntries,
-  addFoodLogEntry as addEntry,
-  deleteFoodLogEntry as deleteEntry,
-  type StoredFoodEntry,
-} from "@/lib/localStorage";
 
-// Map stored entry to FoodLogEntry format
-function mapToFoodLogEntry(entry: StoredFoodEntry): FoodLogEntry {
-  return {
-    id: entry.id,
-    userId: "local",
-    date: entry.date,
-    meal: entry.meal,
-    foodName: entry.foodName,
-    brand: entry.brand,
-    servingSize: entry.servingSize,
-    servings: entry.servings,
-    calories: entry.calories,
-    protein: entry.protein,
-    carbs: entry.carbs,
-    fat: entry.fat,
-    source: entry.source as FoodLogEntry["source"],
-    sourceId: entry.sourceId,
-    createdAt: entry.createdAt,
-  };
+interface AddEntryParams {
+  date: string;
+  meal: MealType;
+  foodName: string;
+  brand?: string;
+  servingSize: string;
+  servings: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  source: string;
+  sourceId?: string;
 }
 
 interface FoodLogData {
@@ -41,7 +29,27 @@ interface FoodLogData {
   error: string | null;
   refetch: () => void;
   deleteEntry: (id: string) => Promise<boolean>;
-  addEntry: (entry: Omit<StoredFoodEntry, "id" | "createdAt">) => FoodLogEntry;
+  addEntry: (entry: AddEntryParams) => Promise<FoodLogEntry | null>;
+}
+
+function mapApiEntry(entry: Record<string, unknown>): FoodLogEntry {
+  return {
+    id: entry.id as string,
+    userId: entry.user_id as string,
+    date: entry.date as string,
+    meal: entry.meal as MealType,
+    foodName: entry.food_name as string,
+    brand: entry.brand as string | undefined,
+    servingSize: entry.serving_size as string,
+    servings: entry.servings as number,
+    calories: entry.calories as number,
+    protein: entry.protein as number,
+    carbs: entry.carbs as number,
+    fat: entry.fat as number,
+    source: entry.source as FoodLogEntry["source"],
+    sourceId: entry.source_id as string | undefined,
+    createdAt: entry.created_at as string,
+  };
 }
 
 export function useFoodLog(date: Date): FoodLogData {
@@ -51,14 +59,17 @@ export function useFoodLog(date: Date): FoodLogData {
 
   const dateString = date.toISOString().split("T")[0];
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const storedEntries = getFoodLogEntries(dateString);
-      const mappedEntries = storedEntries.map(mapToFoodLogEntry);
-      setEntries(mappedEntries);
+      const res = await fetch(`/api/log?date=${dateString}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch food log");
+      }
+      const data = await res.json();
+      setEntries(data.map(mapApiEntry));
     } catch (err) {
       console.error("Error fetching food log:", err);
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -73,23 +84,35 @@ export function useFoodLog(date: Date): FoodLogData {
   }, [fetchData]);
 
   const handleDelete = async (id: string): Promise<boolean> => {
-    const success = deleteEntry(id);
-    if (success) {
+    try {
+      const res = await fetch(`/api/log?id=${id}`, { method: "DELETE" });
+      if (!res.ok) return false;
       setEntries((prev) => prev.filter((entry) => entry.id !== id));
+      return true;
+    } catch {
+      return false;
     }
-    return success;
   };
 
-  const handleAdd = (entry: Omit<StoredFoodEntry, "id" | "createdAt">): FoodLogEntry => {
-    const newEntry = addEntry(entry);
-    const mappedEntry = mapToFoodLogEntry(newEntry);
+  const handleAdd = async (entry: AddEntryParams): Promise<FoodLogEntry | null> => {
+    try {
+      const res = await fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry),
+      });
+      if (!res.ok) throw new Error("Failed to add entry");
+      const data = await res.json();
+      const mapped = mapApiEntry(data);
 
-    // Only add to state if it's for the current date
-    if (entry.date === dateString) {
-      setEntries((prev) => [...prev, mappedEntry]);
+      if (entry.date === dateString) {
+        setEntries((prev) => [...prev, mapped]);
+      }
+
+      return mapped;
+    } catch {
+      return null;
     }
-
-    return mappedEntry;
   };
 
   // Group entries by meal

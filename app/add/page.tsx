@@ -4,7 +4,7 @@ import { useState } from "react";
 import RecentFoods from "@/components/food/RecentFoods";
 import FoodSearch from "@/components/food/FoodSearch";
 import BarcodeScanner from "@/components/food/BarcodeScanner";
-import NutritionLabelScanner from "@/components/food/NutritionLabelScanner";
+import SmartFoodScanner from "@/components/food/SmartFoodScanner";
 import ManualEntryForm from "@/components/food/ManualEntryForm";
 
 type Tab = "recent" | "search" | "scan" | "label" | "manual";
@@ -56,7 +56,7 @@ export default function AddFoodPage() {
               : "border-transparent text-slate-500 hover:text-slate-700"
           }`}
         >
-          AI Label
+          AI
         </button>
         <button
           onClick={() => setActiveTab("manual")}
@@ -74,7 +74,7 @@ export default function AddFoodPage() {
       {activeTab === "recent" && <RecentFoods />}
       {activeTab === "search" && <FoodSearch />}
       {activeTab === "scan" && <BarcodeScanner />}
-      {activeTab === "label" && <NutritionLabelScanner />}
+      {activeTab === "label" && <SmartFoodScanner />}
       {activeTab === "manual" && <ManualEntryForm />}
     </div>
   );

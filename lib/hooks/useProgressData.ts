@@ -1,11 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  getFoodLogEntries,
-  getWeightLogEntries,
-  addWeightLogEntry,
-  getSettings,
-  getAllFoodLogEntries,
-} from "@/lib/localStorage";
 
 interface CalorieData {
   date: string;
@@ -35,16 +28,27 @@ export function useProgressData(days: number = 7): ProgressData {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(() => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const settings = getSettings();
-      const goal = settings.calorieGoal;
+      // Fetch settings and weight in parallel
+      const [settingsRes, weightRes] = await Promise.all([
+        fetch("/api/settings"),
+        fetch(`/api/weight?days=${days}`),
+      ]);
 
-      // Get calorie data for each day
+      let goal = 2000;
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        goal = settingsData.calorie_goal ?? 2000;
+      }
+
+      // Fetch calorie data for each day
       const calorieResults: CalorieData[] = [];
+      const datePromises: Promise<void>[] = [];
+
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -54,35 +58,49 @@ export function useProgressData(days: number = 7): ProgressData {
           day: "numeric",
         });
 
-        const entries = getFoodLogEntries(dateStr);
-        const totalCalories = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
-
-        calorieResults.push({
-          date: dateStr,
-          dateFormatted,
-          calories: totalCalories,
-          goal,
-        });
+        datePromises.push(
+          fetch(`/api/log?date=${dateStr}`)
+            .then((res) => (res.ok ? res.json() : []))
+            .then((entries: Array<{ calories?: number }>) => {
+              const totalCalories = entries.reduce(
+                (sum: number, e: { calories?: number }) => sum + (e.calories || 0),
+                0
+              );
+              calorieResults.push({
+                date: dateStr,
+                dateFormatted,
+                calories: totalCalories,
+                goal,
+              });
+            })
+        );
       }
 
+      await Promise.all(datePromises);
+
+      // Sort by date
+      calorieResults.sort((a, b) => a.date.localeCompare(b.date));
       setCalorieData(calorieResults);
 
-      // Get weight data
-      const weightEntries = getWeightLogEntries(days);
-      const processedWeightData: WeightData[] = weightEntries.map((entry) => {
-        const date = new Date(entry.date);
-        return {
-          date: entry.date,
-          dateFormatted: date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          }),
-          weight: entry.weight,
-          unit: entry.unit,
-        };
-      });
-
-      setWeightData(processedWeightData);
+      // Process weight data
+      if (weightRes.ok) {
+        const weightEntries = await weightRes.json();
+        const processedWeightData: WeightData[] = weightEntries.map(
+          (entry: { date: string; weight: number; unit: string }) => {
+            const date = new Date(entry.date);
+            return {
+              date: entry.date,
+              dateFormatted: date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              }),
+              weight: entry.weight,
+              unit: entry.unit,
+            };
+          }
+        );
+        setWeightData(processedWeightData);
+      }
     } catch (err) {
       console.error("Error fetching progress data:", err);
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -116,7 +134,12 @@ export function useWeightLog() {
     setError(null);
 
     try {
-      addWeightLogEntry(weight, unit);
+      const res = await fetch("/api/weight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weight, unit }),
+      });
+      if (!res.ok) throw new Error("Failed to save weight");
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save weight");
@@ -135,32 +158,55 @@ export function useCalorieHistory(days: number = 30) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const settings = getSettings();
-    const goal = settings.calorieGoal;
+    async function load() {
+      try {
+        const settingsRes = await fetch("/api/settings");
+        let goal = 2000;
+        if (settingsRes.ok) {
+          const settingsData = await settingsRes.json();
+          goal = settingsData.calorie_goal ?? 2000;
+        }
 
-    const results: CalorieData[] = [];
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      const dateFormatted = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+        const results: CalorieData[] = [];
+        const promises: Promise<void>[] = [];
 
-      const entries = getFoodLogEntries(dateStr);
-      const totalCalories = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split("T")[0];
+          const dateFormatted = date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
 
-      results.push({
-        date: dateStr,
-        dateFormatted,
-        calories: totalCalories,
-        goal,
-      });
+          promises.push(
+            fetch(`/api/log?date=${dateStr}`)
+              .then((res) => (res.ok ? res.json() : []))
+              .then((entries: Array<{ calories?: number }>) => {
+                const totalCalories = entries.reduce(
+                  (sum: number, e: { calories?: number }) => sum + (e.calories || 0),
+                  0
+                );
+                results.push({
+                  date: dateStr,
+                  dateFormatted,
+                  calories: totalCalories,
+                  goal,
+                });
+              })
+          );
+        }
+
+        await Promise.all(promises);
+        results.sort((a, b) => a.date.localeCompare(b.date));
+        setData(results);
+      } catch (err) {
+        console.error("Error fetching calorie history:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-
-    setData(results);
-    setLoading(false);
+    load();
   }, [days]);
 
   return { data, loading };

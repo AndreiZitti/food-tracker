@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { type FoodItem } from "@/types/food";
-import { addFoodLogEntry } from "@/lib/localStorage";
 
 type Meal = "breakfast" | "lunch" | "dinner" | "snack";
 
@@ -12,9 +11,11 @@ interface FoodDetailProps {
   onBack: () => void;
   /** Optional: override the date for logging (defaults to today) */
   date?: string;
+  /** Optional: show confidence badge for scanned items */
+  confidenceBadge?: "exact" | "estimated";
 }
 
-export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
+export default function FoodDetail({ food, onBack, date, confidenceBadge }: FoodDetailProps) {
   const router = useRouter();
   const [servings, setServings] = useState(1);
   const [selectedMeal, setSelectedMeal] = useState<Meal>(() => {
@@ -27,25 +28,31 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
   });
   const [adding, setAdding] = useState(false);
 
-  const handleAddFood = () => {
+  const handleAddFood = async () => {
     setAdding(true);
     try {
       const logDate = date || new Date().toISOString().split("T")[0];
 
-      addFoodLogEntry({
-        date: logDate,
-        meal: selectedMeal,
-        foodName: food.name,
-        brand: food.brand,
-        servingSize: food.servingSize,
-        servings: servings,
-        calories: Math.round(food.calories * servings),
-        protein: Math.round(food.protein * servings * 10) / 10,
-        carbs: Math.round(food.carbs * servings * 10) / 10,
-        fat: Math.round(food.fat * servings * 10) / 10,
-        source: food.source,
-        sourceId: food.sourceId,
+      const res = await fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: logDate,
+          meal: selectedMeal,
+          foodName: food.name,
+          brand: food.brand,
+          servingSize: food.servingSize,
+          servings: servings,
+          calories: Math.round(food.calories * servings),
+          protein: Math.round(food.protein * servings * 10) / 10,
+          carbs: Math.round(food.carbs * servings * 10) / 10,
+          fat: Math.round(food.fat * servings * 10) / 10,
+          source: food.source,
+          sourceId: food.sourceId,
+        }),
       });
+
+      if (!res.ok) throw new Error("Failed to add food");
 
       router.push("/diary");
     } catch (error) {
@@ -85,6 +92,25 @@ export default function FoodDetail({ food, onBack, date }: FoodDetailProps) {
         </svg>
         Back
       </button>
+
+      {/* Confidence Badge */}
+      {confidenceBadge && (
+        <div className="flex items-center gap-2">
+          {confidenceBadge === "exact" ? (
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Exact - from nutrition label
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+              <span>≈</span>
+              Estimated - from web search
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm p-4">
         {food.imageUrl && (

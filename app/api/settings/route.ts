@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserSettings, updateUserSettings } from "@/lib/supabase";
+import { getAuthenticatedUser } from "@/lib/auth";
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const userId = searchParams.get("userId") || "demo-user";
+export async function GET() {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
 
   try {
-    const settings = await getUserSettings(userId);
+    const settings = await getUserSettings(auth.user.id);
     return NextResponse.json(settings || {
       calorie_goal: 2000,
       protein_goal: 150,
@@ -24,11 +25,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await getAuthenticatedUser();
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await request.json();
-    const userId = body.userId || "demo-user";
 
-    const success = await updateUserSettings(userId, {
+    const success = await updateUserSettings(auth.user.id, {
       calorie_goal: body.calorieGoal,
       protein_goal: body.proteinGoal,
       carbs_goal: body.carbsGoal,

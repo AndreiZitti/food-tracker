@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { type FoodItem } from "@/types/food";
-import { getRecentFoods, type RecentFood } from "@/lib/localStorage";
+
+interface RecentFood {
+  food_name: string;
+  brand?: string;
+  serving_size: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  source: string;
+  source_id?: string;
+  count: number;
+  last_used: string;
+}
 import FoodDetail from "./FoodDetail";
 
 export default function RecentFoods() {
@@ -14,10 +27,12 @@ export default function RecentFoods() {
     fetchRecentFoods();
   }, []);
 
-  const fetchRecentFoods = () => {
+  const fetchRecentFoods = async () => {
     setLoading(true);
     try {
-      const foods = getRecentFoods(20);
+      const res = await fetch("/api/food/recent?limit=20");
+      if (!res.ok) throw new Error("Failed to fetch");
+      const foods = await res.json();
       setRecentFoods(foods);
     } catch (err) {
       console.error("Error fetching recent foods:", err);
@@ -31,10 +46,10 @@ export default function RecentFoods() {
     const foodItem: FoodItem = {
       id: `recent-${Date.now()}`,
       source: food.source as FoodItem["source"],
-      sourceId: food.sourceId,
-      name: food.foodName,
+      sourceId: food.source_id,
+      name: food.food_name,
       brand: food.brand,
-      servingSize: food.servingSize,
+      servingSize: food.serving_size,
       calories: food.calories,
       protein: food.protein,
       carbs: food.carbs,
@@ -125,20 +140,20 @@ export default function RecentFoods() {
       <div className="space-y-2">
         {recentFoods.map((food, index) => (
           <button
-            key={`${food.foodName}-${food.brand}-${index}`}
+            key={`${food.food_name}-${food.brand}-${index}`}
             onClick={() => handleSelectFood(food)}
             className="w-full p-3 bg-white border border-slate-200 rounded-xl hover:border-teal-300 hover:bg-teal-50 transition-colors text-left"
           >
             <div className="flex justify-between items-start">
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-slate-800 truncate">
-                  {food.foodName}
+                  {food.food_name}
                 </h3>
                 {food.brand && (
                   <p className="text-sm text-slate-500 truncate">{food.brand}</p>
                 )}
                 <p className="text-xs text-slate-400 mt-1">
-                  {food.servingSize} · {formatTimeAgo(food.lastUsed)}
+                  {food.serving_size} · {formatTimeAgo(food.last_used)}
                   {food.count > 1 && (
                     <span className="ml-2 px-1.5 py-0.5 bg-teal-100 text-teal-700 rounded-full">
                       {food.count}x
