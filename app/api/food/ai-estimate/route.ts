@@ -23,36 +23,38 @@ interface NutritionEstimate {
 
 interface AiEstimateResponse {
   status: "estimated" | "need_info";
-  imageType: "nutrition_label" | "menu" | "food_photo" | "delivery_app" | "multiple";
+  imageType: "nutrition_label" | "menu" | "food_photo" | "delivery_app" | "text_description" | "multiple";
   estimate?: NutritionEstimate;
   followUpQuestion?: string;
   followUpOptions?: string[];
   reasoning?: string;
 }
 
-const ESTIMATE_PROMPT = `You are a nutrition estimation expert. Analyze the provided food image(s) and respond with JSON only (no markdown fences).
+const ESTIMATE_PROMPT = `You are a nutrition estimation expert. You may receive food image(s), a text description, or both. Respond with JSON only (no markdown fences).
 
-First, classify the image(s):
-- "nutrition_label" — a nutrition facts panel
-- "menu" — a restaurant menu or menu board
-- "food_photo" — a photo of actual food/dish
-- "delivery_app" — a screenshot from a food delivery app
-- "multiple" — if multiple image types are provided together
+First, classify the input:
+- "nutrition_label" — a nutrition facts panel (image)
+- "menu" — a restaurant menu or menu board (image)
+- "food_photo" — a photo of actual food/dish (image)
+- "delivery_app" — a screenshot from a food delivery app (image)
+- "text_description" — no image, just a text description of what was eaten
+- "multiple" — if multiple image types or image + text description are provided together
 
 Then, estimate the nutritional content:
 
 IF "nutrition_label": Extract the exact values from the label.
 
-FOR ALL OTHER TYPES: Estimate the total nutritional values for what is shown. Consider:
+FOR ALL OTHER TYPES (including text descriptions): Estimate the total nutritional values. Consider:
 - Typical restaurant/homemade portion sizes
-- Visible ingredients and cooking method
+- Visible ingredients and cooking method (if photo provided)
 - Sauce, oil, butter, cheese that may not be obvious
-- Side dishes visible in the photo
+- Side dishes visible in the photo or mentioned in text
+- Any specific details the user mentions (ingredients, preparation, restaurant)
 
 ALWAYS return this JSON structure:
 {
   "status": "estimated",
-  "imageType": "nutrition_label" | "menu" | "food_photo" | "delivery_app" | "multiple",
+  "imageType": "nutrition_label" | "menu" | "food_photo" | "delivery_app" | "text_description" | "multiple",
   "estimate": {
     "name": "descriptive name of the food item",
     "calories": integer,
@@ -104,14 +106,17 @@ export async function POST(request: NextRequest) {
     const body: AiEstimateRequest = await request.json();
     const { images, context, followUpAnswer, previousEstimate } = body;
 
-    if (!images || images.length === 0) {
+    const hasImages = images && images.length > 0;
+    const hasContext = context && context.trim().length > 0;
+
+    if (!hasImages && !hasContext) {
       return NextResponse.json(
-        { error: "At least one image is required" },
+        { error: "Provide a photo or describe what you ate" },
         { status: 400 }
       );
     }
 
-    if (images.length > 5) {
+    if (images && images.length > 5) {
       return NextResponse.json(
         { error: "Maximum 5 images allowed" },
         { status: 400 }
@@ -134,7 +139,7 @@ export async function POST(request: NextRequest) {
     // Build content parts: prompt + all images
     const parts: Array<string | { inlineData: { mimeType: string; data: string } }> = [prompt];
 
-    for (const image of images) {
+    for (const image of (images || [])) {
       const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
       let mimeType = "image/jpeg";
       if (image.startsWith("data:image/png")) mimeType = "image/png";
