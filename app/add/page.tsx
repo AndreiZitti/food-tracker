@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { type FoodItem } from "@/types/food";
 import FoodDetail from "@/components/food/FoodDetail";
@@ -19,6 +19,14 @@ const mealLabels: Record<string, string> = {
 };
 
 export default function AddFoodPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin h-8 w-8 border-4 border-[var(--zfit-primary)] border-t-transparent rounded-full" /></div>}>
+      <AddFoodContent />
+    </Suspense>
+  );
+}
+
+function AddFoodContent() {
   const searchParams = useSearchParams();
   const meal = searchParams.get("meal") || "breakfast";
 
