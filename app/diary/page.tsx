@@ -14,17 +14,17 @@ export default function DiaryPage() {
     useFoodLog(selectedDate);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-4">
+    <div className="max-w-lg mx-auto px-5 py-4">
       <DateSelector date={selectedDate} onDateChange={setSelectedDate} />
       <DailyTotals totals={totals} loading={loading} />
 
       {error && (
-        <div className="mt-4 p-3 bg-rose-50 text-rose-600 rounded-lg text-sm">
-          {error}
+        <div className="text-center py-4 text-sm text-[var(--zfit-gray-400)]">
+          Could not load food log. Please try again.
         </div>
       )}
 
-      <div className="space-y-4 mt-4">
+      <div className="space-y-3 mt-5">
         {meals.map((meal) => (
           <MealSection
             key={meal}

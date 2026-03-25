@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* ============================================
-   Z-FIT DESIGN SYSTEM
-   A cohesive, modern fitness app color palette
+   Z-FIT DESIGN SYSTEM v2
+   Warm, premium wellness app palette
    ============================================ */
 
 :root {
@@ -12,41 +12,49 @@
   --zfit-primary-light: #14b8a6;
   --zfit-primary-subtle: #ccfbf1;
 
-  /* Accent - For CTAs and highlights */
-  --zfit-accent: #10b981;
-  --zfit-accent-dark: #059669;
+  /* Secondary Accent - Warm Coral */
+  --zfit-coral: #D89575;
+  --zfit-coral-light: #F0C4A8;
 
-  /* Neutral Palette - Clean grays */
-  --zfit-gray-50: #f8fafc;
-  --zfit-gray-100: #f1f5f9;
-  --zfit-gray-200: #e2e8f0;
-  --zfit-gray-300: #cbd5e1;
-  --zfit-gray-400: #94a3b8;
-  --zfit-gray-500: #64748b;
-  --zfit-gray-600: #475569;
-  --zfit-gray-700: #334155;
-  --zfit-gray-800: #1e293b;
-  --zfit-gray-900: #0f172a;
+  /* Neutral Palette - Warm tones */
+  --zfit-gray-50: #FAFAF8;
+  --zfit-gray-100: #F5F4F1;
+  --zfit-gray-200: #EDECEA;
+  --zfit-gray-300: #D1D0CD;
+  --zfit-gray-400: #A8A7A5;
+  --zfit-gray-500: #6D6C6A;
+  --zfit-gray-600: #4A4947;
+  --zfit-gray-700: #343332;
+  --zfit-gray-800: #1A1918;
+  --zfit-gray-900: #0f0e0d;
 
   /* Semantic - Macros */
   --zfit-protein: #6366f1;  /* Indigo - Protein */
+  --zfit-protein-bg: #E0E7FF;
   --zfit-carbs: #f59e0b;    /* Amber - Carbs */
+  --zfit-carbs-bg: #FEF3C7;
   --zfit-fat: #ec4899;      /* Pink - Fat */
+  --zfit-fat-bg: #FCE7F3;
 
   /* Semantic - Status */
   --zfit-success: #10b981;
   --zfit-warning: #f59e0b;
-  --zfit-error: #ef4444;
+  --zfit-error: #D08068;
 
   /* Surfaces */
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #F5F4F1;
+  --foreground: #1A1918;
   --surface: #ffffff;
-  --surface-elevated: #ffffff;
+  --surface-elevated: #FAFAF8;
 
   /* Borders & Dividers */
-  --border-color: #e2e8f0;
-  --divider-color: #f1f5f9;
+  --border-color: #E5E4E1;
+  --divider-color: #EDECEA;
+
+  /* Shadows - Warm toned */
+  --shadow-sm: 0 1px 6px rgba(26, 25, 24, 0.03);
+  --shadow-md: 0 2px 12px rgba(26, 25, 24, 0.06);
+  --shadow-lg: 0 4px 20px rgba(26, 25, 24, 0.08);
 }
 
 @theme inline {
@@ -55,11 +63,11 @@
   --color-primary: var(--zfit-primary);
   --color-primary-dark: var(--zfit-primary-dark);
   --color-primary-light: var(--zfit-primary-light);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-outfit), var(--font-inter);
 
   /* Custom colors for Tailwind */
   --color-zfit-primary: var(--zfit-primary);
-  --color-zfit-accent: var(--zfit-accent);
+  --color-zfit-coral: var(--zfit-coral);
   --color-zfit-protein: var(--zfit-protein);
   --color-zfit-carbs: var(--zfit-carbs);
   --color-zfit-fat: var(--zfit-fat);
@@ -67,16 +75,18 @@
 
 /* Force light mode - no dark mode support for now */
 
-html,
+html {
+  overflow-x: hidden;
+}
+
 body {
   max-width: 100vw;
-  overflow-x: hidden;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit), var(--font-inter), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -105,6 +115,19 @@ a.rounded-full {
   min-width: auto;
 }
 
+/* Warm card shadow utility */
+.shadow-warm {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-warm-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-warm-lg {
+  box-shadow: var(--shadow-lg);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
@@ -115,10 +138,10 @@ a.rounded-full {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--zfit-gray-300);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--zfit-gray-400);
 }

@@ -1,5 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import { type FoodLogEntry, type MealType } from "@/types/food";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { type FoodLogEntry, type MealType, type FoodSource } from "@/types/food";
+import { useAuthContext } from "@/lib/auth/auth-context";
+import {
+  getLocalFoodLog,
+  addLocalFoodLogEntry,
+  deleteLocalFoodLogEntry,
+  bulkPutFoodLog,
+} from "@/lib/db/food-log-dal";
+import type { FoodLogRecord } from "@/lib/db/local-db";
 
 interface AddEntryParams {
   date: string;
@@ -32,81 +40,173 @@ interface FoodLogData {
   addEntry: (entry: AddEntryParams) => Promise<FoodLogEntry | null>;
 }
 
-function mapApiEntry(entry: Record<string, unknown>): FoodLogEntry {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function mapRecordToEntry(r: FoodLogRecord): FoodLogEntry {
+  return {
+    id: r.id,
+    userId: r.user_id,
+    date: r.date,
+    meal: r.meal as MealType,
+    foodName: r.food_name,
+    brand: r.brand,
+    servingSize: r.serving_size,
+    servings: r.servings,
+    calories: r.calories,
+    protein: r.protein,
+    carbs: r.carbs,
+    fat: r.fat,
+    source: r.source as FoodSource,
+    sourceId: r.source_id,
+    createdAt: r.created_at,
+  };
+}
+
+function mapApiToRecord(entry: Record<string, unknown>): FoodLogRecord {
   return {
     id: entry.id as string,
-    userId: entry.user_id as string,
+    user_id: entry.user_id as string,
     date: entry.date as string,
-    meal: entry.meal as MealType,
-    foodName: entry.food_name as string,
+    meal: entry.meal as FoodLogRecord["meal"],
+    food_name: entry.food_name as string,
     brand: entry.brand as string | undefined,
-    servingSize: entry.serving_size as string,
+    serving_size: entry.serving_size as string,
     servings: entry.servings as number,
     calories: entry.calories as number,
     protein: entry.protein as number,
     carbs: entry.carbs as number,
     fat: entry.fat as number,
-    source: entry.source as FoodLogEntry["source"],
-    sourceId: entry.source_id as string | undefined,
-    createdAt: entry.created_at as string,
+    source: entry.source as FoodLogRecord["source"],
+    source_id: entry.source_id as string | undefined,
+    created_at: entry.created_at as string,
+    synced: true,
   };
 }
+
+/**
+ * Merge server entries into IndexedDB (server wins for matching IDs).
+ */
+async function mergeServerData(
+  dateString: string,
+  serverEntries: Record<string, unknown>[]
+) {
+  const records = serverEntries.map(mapApiToRecord);
+  if (records.length > 0) {
+    await bulkPutFoodLog(records);
+  }
+  // Re-read from IndexedDB so unsynced local entries are preserved
+  return getLocalFoodLog(dateString);
+}
+
+// ---------------------------------------------------------------------------
+// Hook
+// ---------------------------------------------------------------------------
 
 export function useFoodLog(date: Date): FoodLogData {
   const [entries, setEntries] = useState<FoodLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { mode } = useAuthContext();
 
   const dateString = date.toISOString().split("T")[0];
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // Avoid stale closure issues when background fetches complete after date change
+  const dateRef = useRef(dateString);
+  dateRef.current = dateString;
 
+  const loadLocal = useCallback(async () => {
     try {
-      const res = await fetch(`/api/log?date=${dateString}`);
-      if (!res.ok) {
-        throw new Error("Failed to fetch food log");
-      }
-      const data = await res.json();
-      setEntries(data.map(mapApiEntry));
+      const records = await getLocalFoodLog(dateString);
+      setEntries(records.map(mapRecordToEntry));
     } catch (err) {
-      console.error("Error fetching food log:", err);
-      setError(err instanceof Error ? err.message : "Failed to load data");
-      setEntries([]);
+      console.error("Error reading local food log:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to load local data"
+      );
     } finally {
       setLoading(false);
     }
   }, [dateString]);
 
+  const syncFromServer = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/log?date=${dateString}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      // Only apply if date hasn't changed while we were fetching
+      if (dateRef.current !== dateString) return;
+      const merged = await mergeServerData(dateString, data);
+      if (dateRef.current === dateString) {
+        setEntries(merged.map(mapRecordToEntry));
+      }
+    } catch {
+      // Server errors are silent — local data is already shown
+    }
+  }, [dateString]);
+
+  // On mount / date change: local first, then background sync
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    setLoading(true);
+    setError(null);
+    loadLocal().then(() => {
+      if (mode === "authenticated") {
+        syncFromServer();
+      }
+    });
+  }, [loadLocal, syncFromServer, mode]);
 
   const handleDelete = async (id: string): Promise<boolean> => {
     try {
-      const res = await fetch(`/api/log?id=${id}`, { method: "DELETE" });
-      if (!res.ok) return false;
+      await deleteLocalFoodLogEntry(id);
       setEntries((prev) => prev.filter((entry) => entry.id !== id));
+
+      // Background server delete
+      if (mode === "authenticated") {
+        fetch(`/api/log?id=${id}`, { method: "DELETE" }).catch(() => {});
+      }
       return true;
     } catch {
       return false;
     }
   };
 
-  const handleAdd = async (entry: AddEntryParams): Promise<FoodLogEntry | null> => {
+  const handleAdd = async (
+    entry: AddEntryParams
+  ): Promise<FoodLogEntry | null> => {
     try {
-      const res = await fetch("/api/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(entry),
+      // Write to IndexedDB first
+      const record = await addLocalFoodLogEntry({
+        user_id: "",
+        date: entry.date,
+        meal: entry.meal as FoodLogRecord["meal"],
+        food_name: entry.foodName,
+        brand: entry.brand,
+        serving_size: entry.servingSize,
+        servings: entry.servings,
+        calories: entry.calories,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fat: entry.fat,
+        source: entry.source as FoodLogRecord["source"],
+        source_id: entry.sourceId,
       });
-      if (!res.ok) throw new Error("Failed to add entry");
-      const data = await res.json();
-      const mapped = mapApiEntry(data);
 
-      if (entry.date === dateString) {
+      const mapped = mapRecordToEntry(record);
+
+      // Update state immediately if same date
+      if (entry.date === dateRef.current) {
         setEntries((prev) => [...prev, mapped]);
+      }
+
+      // Background server write
+      if (mode === "authenticated") {
+        fetch("/api/log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry),
+        }).catch(() => {});
       }
 
       return mapped;
@@ -147,7 +247,7 @@ export function useFoodLog(date: Date): FoodLogData {
     totals,
     loading,
     error,
-    refetch: fetchData,
+    refetch: loadLocal,
     deleteEntry: handleDelete,
     addEntry: handleAdd,
   };

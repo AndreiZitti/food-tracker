@@ -1,12 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import Header from "@/components/layout/Header";
+import { AuthProvider } from "@/lib/auth/auth-context";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -42,12 +49,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-slate-50 min-h-screen`}>
-        <Header />
-        <main className="pb-20 min-h-screen">
-          {children}
-        </main>
-        <BottomNavigation />
+      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-[var(--background)] min-h-screen`}>
+        <AuthProvider>
+          <Header />
+          <main className="pb-24 min-h-screen">
+            {children}
+          </main>
+          <BottomNavigation />
+        </AuthProvider>
       </body>
     </html>
   );
