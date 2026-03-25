@@ -30,6 +30,30 @@ interface AiResponse {
   reasoning?: string;
 }
 
+/** Resize and compress an image file to reduce payload size for the API */
+function compressImage(file: File, maxDim = 1024, quality = 0.8): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        const ratio = Math.min(maxDim / width, maxDim / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas not supported"));
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export default function SmartFoodScanner() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -41,17 +65,23 @@ export default function SmartFoodScanner() {
   const [error, setError] = useState<string | null>(null);
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImages((prev) => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
+    for (const file of Array.from(files)) {
+      try {
+        const compressed = await compressImage(file);
+        setImages((prev) => [...prev, compressed]);
+      } catch {
+        // Fallback to raw base64 if compression fails
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImages((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
     e.target.value = "";
   };
@@ -79,8 +109,14 @@ export default function SmartFoodScanner() {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to analyze");
+        let message = "Failed to analyze";
+        try {
+          const data = await res.json();
+          message = data.error || message;
+        } catch {
+          // Response wasn't JSON (e.g. body too large)
+        }
+        throw new Error(message);
       }
 
       const data: AiResponse = await res.json();

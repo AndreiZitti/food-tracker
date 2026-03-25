@@ -89,13 +89,20 @@ body {
   }
 }
 
-/* Large touch targets */
-button,
-a,
+/* Large touch targets - but allow small utility buttons */
+button:not(.btn-sm),
+a:not(.btn-sm):not(.rounded-full),
 input[type="submit"],
 input[type="button"] {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Small buttons/links opt-out */
+.btn-sm,
+a.rounded-full {
+  min-height: auto;
+  min-width: auto;
 }
 
 /* Custom scrollbar */

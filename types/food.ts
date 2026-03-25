@@ -311,3 +311,82 @@ export interface ApiError {
   message: string;
   details?: Record<string, unknown>;
 }
+
+// =============================================================================
+// Smart Food Scanner Types
+// =============================================================================
+
+/**
+ * Confidence level for nutrition data
+ */
+export type ConfidenceLevel = 'high' | 'medium' | 'low';
+
+/**
+ * Type of image detected by the scanner
+ */
+export type ImageType = 'nutrition_label' | 'menu' | 'food_photo' | 'delivery_app' | 'unknown';
+
+/**
+ * Detected food description from non-label images
+ */
+export interface DetectedFood {
+  description: string;
+  size?: string;
+  restaurant?: string;
+  context?: string;
+}
+
+/**
+ * Scan result when nutrition label is detected (exact extraction)
+ */
+export interface ExactScanResult {
+  type: 'exact';
+  confidence: ConfidenceLevel;
+  imageType: 'nutrition_label';
+  food: FoodItem;
+}
+
+/**
+ * Scan result when menu/food photo detected (needs web search)
+ */
+export interface NeedsSearchScanResult {
+  type: 'needs_search';
+  imageType: Exclude<ImageType, 'nutrition_label'>;
+  detected: DetectedFood;
+}
+
+/**
+ * Combined scan result type
+ */
+export type ScanResult = ExactScanResult | NeedsSearchScanResult;
+
+/**
+ * Single nutrition option from web search
+ */
+export interface NutritionOption {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  servingSize: string;
+  servingWeight?: number;
+  source: string;
+  sourceUrl?: string;
+}
+
+/**
+ * Web search result with multiple nutrition options
+ */
+export interface SearchNutritionResult {
+  type: 'estimated';
+  confidence: ConfidenceLevel;
+  query: string;
+  options: NutritionOption[];
+}
+
+/**
+ * Extended FoodSource to include web_search
+ */
+export type ExtendedFoodSource = FoodSource | 'web_search';

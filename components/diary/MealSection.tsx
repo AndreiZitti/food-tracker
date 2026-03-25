@@ -121,7 +121,7 @@ export default function MealSection({
           </span>
           <Link
             href={`/add?meal=${meal}&date=${date.toISOString().split("T")[0]}`}
-            className="p-1.5 rounded-full bg-teal-100 text-teal-600 hover:bg-teal-200 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-teal-100 text-teal-600 hover:bg-teal-200 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
